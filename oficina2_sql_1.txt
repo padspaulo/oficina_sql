@@ -1,0 +1,79 @@
+create database oficina;
+drop database oficina;
+use oficina;
+
+-- Criar tabela cliente
+create table clients(
+	idClient int auto_increment primary key,
+    Fname varchar(10),
+    Minit char(3),
+    Lname varchar(20),
+    CPF char(11) not null,
+    Address varchar(30),
+    constraint unique_cpf_client unique (CPF)
+);
+
+-- Criar tabela veiculo
+create table vehicle(
+	idVehicle int auto_increment primary key,
+    idVehicleClient int,
+    vehicle_registration varchar(10),
+    constraint unique_id_vehicle unique (idVehicle),
+    constraint unique_vehicle_registration unique (vehicle_registration),
+    constraint fk_vehicle_client foreign key (idVehicleClient) references clients(idClient)
+    on update cascade
+);
+
+-- Criar tabela mecanicos
+create table mechanics(
+	idMechanic int auto_increment primary key,
+    Mname varchar(45),
+    Address varchar(45),
+    expertise varchar(15)
+);
+
+-- Criar tabela de avaliação automóvel
+create table carEvaluation(
+	idEvaluation int auto_increment primary key,
+    evaluationType enum('Conserto','Revisão') default 'Conserto',
+    payment float
+);
+
+-- Criar tabela de ordem de serviço
+create table ServiceOrder(
+	idServiceOrder int auto_increment primary key,
+    idVehicleServiceOrder int,
+    idCarEvServiceOrder int,
+    idAvaliation int,
+    serviceValue float,
+    pieceValue float,
+    serviceState bool,
+    conclusionDate date,
+    serviceLabor float,
+    constraint fk_vehicle_serviceOrder foreign key (idVehicleServiceOrder) references vehicle(idVehicle)
+    on update cascade,
+    constraint fk_carEvaluation_serviceOrder foreign key (idCarEvServiceOrder) references carEvaluation(idEvaluation)
+    on update cascade
+);
+
+-- Criar tabela de peças
+create table pieces(
+	idPiece int auto_increment primary key,
+    idpiecesServiceOrder int,
+    pieceValue float,
+    constraint fk_pieces_serviceOrder foreign key (idpiecesServiceOrder) references serviceOrder(idServiceOrder)
+		on update cascade
+);
+
+drop table pieces;
+
+-- Criar tabela de pagamentos
+create table payment(
+	idPayment int auto_increment primary key,
+    idPaymentServiceOrder int,
+    payment float,
+    paymentType enum('Cartão','Boleto') default 'Boleto',
+    constraint fk_payment_serviceOrder foreign key (idPaymentServiceOrder) references serviceOrder(idServiceOrder)
+    on update cascade
+);
+

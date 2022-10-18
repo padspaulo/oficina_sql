@@ -1,0 +1,98 @@
+show tables;
+desc vehicle;
+desc pieces;
+
+-- Insere os campos clientes
+insert into clients(Fname, Minit, Lname, CPF, Address) values
+				('Maria','M','Silva',123456789, 'rua silva 9, Carangola'),
+				('Matheus','O','Pimentel',134436789, 'rua alameda 289, Centro'),
+				('Ricardo','F','França',124566589, 'rua laranjeira 11, flores'),
+				('Julia','S','Assis',978498979, 'Avenida Koller 17, flores'),
+				('Maria','M','Silva',1233445589, 'rua prata 73, Carangola'),
+				('Isabella','M','Cruz',56767774, 'rua sdas flores 28, Centro');
+                
+select * from clients;          
+
+insert into Mechanics(Mname, Address, expertise) values
+				('João Pedro','rua silva 9, Carangola', 'Motor'),
+				('André Carvalho','rua alameda 289, Centro', 'Pintura'),
+				('Pedro Matos','rua laranjeira 11, flores','Geral');
+                
+insert into Vehicle(vehicle_registration) values
+				(2,'3322AA44BB'),
+				(3,'DF43BB78DS'),
+				(4,'EQ78DB5489'),
+                (3,'3DR2AA44BB'),
+				(1,'DF43RTD5DS'),
+				(6,'GH58DB5489');
+
+desc carEvaluation;
+insert into carEvaluation(evaluationType, payment) values
+				('Conserto',300),
+				('Revisão',100),
+				('Conserto',200),
+                ('Conserto',150),
+				('Revisão',100),
+				('Conserto',200);
+select * from carEvaluation;              
+
+desc serviceOrder;  
+insert into serviceOrder(idVehicleServiceOrder, idCarEvServiceOrder,idAvaliation,
+						serviceValue,pieceValue, serviceState,conclusionDate,serviceLabor) values
+				(2,2,1,50,30,false,'2021-12-03',20),
+				(3,3,3,400,200,true,'2022-08-02',200),
+				(3,4,4,150,50,true,'2022-10-22',50),
+                (4,1,2,200,100,true,'2022-11-24',100),
+				(1,4,6,300,250,false,'2022-09-02',50),
+				(5,6,3,300,150,true,'2022-12-12',150);
+select * from serviceOrder;               
+
+insert into pieces(idpiecesServiceOrder, pieceValue) values
+				(1,30),
+				(2,200),
+				(3,50),
+                (4,100),
+				(5,250),
+				(6,150); 
+select * from pieces;
+drop table pieces;       
+         
+insert into payment(idPaymentServiceOrder, payment, paymentType) values
+				(1,50,'Boleto'),
+				(2,400,'Cartão'),
+				(3,150,'Boleto'),
+                (4,200,'Boleto'),
+				(5,300,'Cartão'),
+				(6,300,'Boleto'); 
+                
+-- exercicios de queries propostos
+-- utilizar banco especifico
+use oficina;
+-- mostrar tabelas 
+show tables; 
+-- Selecionar todos elementos da tabela
+select * from clients; 
+-- Selecionar com clausula where 
+select * from clients where idClient = 2;
+-- Selecionar por atributo
+select Fname, Address as Endereço from clients where idClient = 3;
+-- Selecionar com contagem de clientes
+select count(*) from clients;
+-- Selecionar da tabela serviceOrder com denominação s e tabela carEvaluation o onde s.idServiceOrder = c.idEvaluation
+select * from serviceOrder s, carEvaluation c where s.idServiceOrder = c.idEvaluation;
+-- Instrução anterior com somatorio do valor de seviço 
+select sum(serviceValue) from serviceOrder s, carEvaluation c where s.idServiceOrder = c.idEvaluation;
+     
+-- Selecionar idServiceOrder, conclusionDate das tabelas serviceOrder e carEvaluation com clausula where agrupando por idServiceOrder  
+select idServiceOrder, conclusionDate from serviceOrder s, carEvaluation c
+						where s.idServiceOrder = c.idEvaluation
+                        group by idServiceOrder;
+-- Selecionar usando inner join das tabelas serviceOrder, carEvaluation e vehicle com as clausulas inner join
+
+select idServiceOrder, serviceValue, evaluationType, vehicle_registration  from serviceOrder s inner join carEvaluation c On s.idServiceOrder = c.idEvaluation
+						inner join vehicle v on v.idVehicle = s.idVehicleServiceOrder
+                        group by idServiceOrder;
+-- Selecionar com having superior a 200 na tabela serviceOrder
+select * from serviceOrder group by serviceState
+						having sum(serviceValue) > 200
+                        order by idServiceOrder;
